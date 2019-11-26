@@ -1,0 +1,21 @@
+<launch>
+    <!--include file="$(find agv_driver)/launch/agv_driver.launch"/-->
+
+    <!--node name="lidar_optic_angle" pkg="agv_driver" type="lidar_optic_angle"/-->
+
+    <!--include file="$(find agv_driver)/launch/navigation.launch"/-->
+
+    <!--node name="rviz" pkg="rviz" type="rviz" args="-d $(find agv_driver)/slam_rviz.rviz"/-->
+
+    <!--node name="startup_script" pkg="agv_driver" type="startup_script"/-->
+
+    <!--include file="$(find agv_driver)/launch/send_urdf.launch"/-->
+
+    <!--node name="camera_location" pkg="agv_driver" type="camera_location"/-->
+
+    <node name="rviz" pkg="rviz" type="rviz" output="screen"/>
+
+    <node name="product_path" pkg="path_track" type="product_path" output="screen"/>
+
+    <node name="robot_kinematic_model" pkg="path_track" type="robot_kinematic_model"/>
+</launch>
