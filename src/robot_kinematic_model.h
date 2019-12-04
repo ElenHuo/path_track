@@ -25,8 +25,8 @@
 using namespace std;
 //using namespace boost;
 
-#define max_lin_acc 500
-#define max_ang_acc 500
+#define max_lin_acc 2.5
+#define max_ang_acc 3
 
 boost::shared_ptr<Tf_Listerner> car_in_map_g;
 

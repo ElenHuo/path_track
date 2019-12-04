@@ -111,6 +111,36 @@ void pubOnepoint()
     cout << "product a path." << endl;    
 }
 
+void pubW()
+{
+    double car_x = car_in_map_->x();
+    double car_y = car_in_map_->y();   
+    nav_msgs::Path path; 
+    path.header.frame_id = "map";
+    path.poses.resize(40);
+    for(int i = 0 ; i <10 ; i++)
+    {
+        path.poses[i].pose.position.x = car_x + 0.707 * 0.15 * i ;
+        path.poses[i].pose.position.y = car_y - 0.707 * 0.15 * i ;
+    }
+    for(int i = 10 ; i <20 ; i++)
+    {
+        path.poses[i].pose.position.x = car_x + 0.707 * 0.15 * (i-9) ;
+        path.poses[i].pose.position.y = car_y - 0.707 * 0.15 * (i-9) ;        
+    }
+    for(int i = 20 ; i <30 ; i++)
+    {
+        path.poses[i].pose.position.x = car_x + 0.707 * 0.15 * (i-19) ;
+        path.poses[i].pose.position.y = car_y - 0.707 * 0.15 * (i-19) ;         
+    }
+    for(int i = 30; i <40 ; i++) 
+    {
+        path.poses[i].pose.position.x = car_x + 0.707 * 0.15 * (i-29) ;
+        path.poses[i].pose.position.y = car_y - 0.707 * 0.15 * (i-29) ;          
+    }
+    pub_path_.publish(path);
+}
+
 int main(int argc,char** argv)
 {
     ros::init(argc, argv, "product_path");
@@ -127,6 +157,7 @@ int main(int argc,char** argv)
         else if(path_shape == '7') pubLine7();
         else if(path_shape == 'z') pubLineZ();
         else if(path_shape == '1') pubOnepoint();
+        else if(path_shape == 'w') pubW();
         else cout << "please a regualte char." << endl;
     }
     return 0;
