@@ -1,5 +1,5 @@
-#ifndef DWA_PATH_TRACK_H
-#define DWA_PATH_TRACK_H
+#ifndef DWA_PATH_TRACK2_H
+#define DWA_PATH_TRACK2_H
 
 #include <vector>
 #include <iostream>
@@ -9,6 +9,7 @@
 #include <nav_msgs/OccupancyGrid.h>
 #include <geometry_msgs/Twist.h>
 #include <geometry_msgs/Pose.h>
+#include <geometry_msgs/PoseArray.h>
 #include <geometry_msgs/Point32.h>
 #include <std_msgs/String.h>
 #include "tf_listerner.h"
@@ -19,25 +20,29 @@
 #include <ctime>
 #include <stdio.h>
 
-using namespace std;
-using namespace boost;
-shared_ptr<Tf_Listerner> car_in_map_g;
+#define max_linear_vel 0.7
+#define max_angular_vel 1
+#define max_linear_acc 2.5
+#define max_angular_acc 3
+double real_linear_vel = 0;
+double real_angular_vel = 0;
 
+using namespace std;
+//using namespace boost;
+
+boost::shared_ptr<Tf_Listerner> car_in_map_g;
+
+int map_g[30][30];
 
 class One_Particle
 {
 public:
     One_Particle();
 	~One_Particle();
-	One_Particle(nav_msgs::Path path , nav_msgs::OccupancyGrid map);
-	One_Particle(One_Particle* particle , nav_msgs::Path path , nav_msgs::OccupancyGrid map);
-    // double move_radius_[38] = {-23.3,-14.4,-8.9,-5.5,-3.4,-2.1,-1.3,-0.8,-0.5,-0.3,-0.2,-0.1,-0.087,-0.054,-0.033,-0.021,-0.011,0.01,-0.001,
-	//                            0.001,0.01,0.011,0.021,0.033,0.054,0.087,0.1,0.2,0.3,0.5,0.8,1.3,2.1,3.4,5.5,8.9,14.4,23.3};
-	// double move_radius_[38] = {0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,
-	//                            0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,};
+	One_Particle(nav_msgs::Path path, nav_msgs::OccupancyGrid map);
+	One_Particle(One_Particle* particle, nav_msgs::Path path, nav_msgs::OccupancyGrid map);
 	double move_radius_[26] = {-23.3,-14.4,-8.9,-5.5,-3.4,-2.1,-1.3,-0.8,-0.5,-0.3,-0.2,-0.1,-0.001,
 	                           0.001,0.1,0.2,0.3,0.5,0.8,1.3,2.1,3.4,5.5,8.9,14.4,23.3};
-	// double move_radius_[26] = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
 	double evaluate_value_;
 	vector<int> speed_encode_;
 	vector<geometry_msgs::Point32> trajectory_point_;
@@ -46,15 +51,13 @@ public:
 	double predicte_time_;
 	double first_time_;
 
-	void productParticle(nav_msgs::Path path , nav_msgs::OccupancyGrid map);
-	void neighbourSearch(One_Particle* particle , nav_msgs::Path path , nav_msgs::OccupancyGrid map);
+	void productParticle(nav_msgs::Path path, nav_msgs::OccupancyGrid map);
+	void neighbourSearch(One_Particle* particle, nav_msgs::Path path, nav_msgs::OccupancyGrid map);
 	void generateTrajectory();
-	void setEvaluateValue(nav_msgs::Path path,nav_msgs::OccupancyGrid map);
+	void setEvaluateValue(nav_msgs::Path path, nav_msgs::OccupancyGrid map);
 	void displayTrajectory();
 	bool trajectoryVelidCheck();
 };
-
-
 
 using namespace std;
 
@@ -77,12 +80,11 @@ private:
 	One_Particle* best_particle_;
 	int particle_num_;
 
-	
-	
 	void dynamicCb(path_track::path_track_Config &config,uint32_t level);
 	void subDwaMap(nav_msgs::OccupancyGrid map);
 	void subPath(nav_msgs::Path path);
 	void pubVelocity(One_Particle* particle);
+	void loadMap();
 
 	void pthreadTwo();
     static void *threadTwo(void * arg);

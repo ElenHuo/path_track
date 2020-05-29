@@ -1,5 +1,7 @@
 #include "robot_kinematic_model.h"
 
+//本文件是虚拟的两轮差速小车模型，用于仿真环境
+
 Robot_Model::Robot_Model()
 :linear_vel_(0),angular_vel_(0),real_lin_vel_(0),real_ang_vel_(0)
 {

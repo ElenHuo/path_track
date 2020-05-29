@@ -3,10 +3,35 @@
 #include <iostream>
 #include "tf_listerner.h"
 
+#define PI 3.1415926535f
+
 using namespace std;
+
 
 Tf_Listerner* car_in_map_;
 ros::Publisher pub_path_;
+ros::Publisher pub_obstacle;
+
+void Obstacle_production()
+{
+    double car_x = car_in_map_->x();
+    double car_y = car_in_map_->y();
+    nav_msgs::Path path; 
+    path.header.frame_id = "map";
+    path.poses.resize(21);
+    path.poses[0].pose.position.x = car_x + 2;
+    path.poses[0].pose.position.y = car_y ;
+    double R = 0.1;
+    double theta = 0 ;
+    for(int i = 1; i < 21 ; i++)
+    {
+       path.poses[i].pose.position.x = path.poses[0].pose.position.x + R * cos(theta);
+       path.poses[i].pose.position.y = path.poses[0].pose.position.y + R * sin(theta);
+       theta += PI/10;
+    }
+    pub_obstacle.publish(path);
+
+}
 
 void pubPath()
 {
@@ -118,41 +143,51 @@ void pubW()
     nav_msgs::Path path; 
     path.header.frame_id = "map";
     path.poses.resize(40);
-    for(int i = 0 ; i <10 ; i++)
+    for(int i = 0;i < 10;i++)
     {
-        path.poses[i].pose.position.x = car_x + 0.707 * 0.15 * i ;
-        path.poses[i].pose.position.y = car_y - 0.707 * 0.15 * i ;
+        path.poses[i].pose.position.x = car_x + 0.707 * 0.15 * i;
+        path.poses[i].pose.position.y = car_y - 0.707 * 0.15 * i;
     }
-    for(int i = 10 ; i <20 ; i++)
+    for(int i = 10;i < 20;i++)
     {
-        path.poses[i].pose.position.x = car_x + 0.707 * 0.15 * (i-9) ;
-        path.poses[i].pose.position.y = car_y - 0.707 * 0.15 * (i-9) ;        
+        path.poses[i].pose.position.x = path.poses[9].pose.position.x + 0.707 * 0.15 * (i - 9);
+        path.poses[i].pose.position.y = path.poses[9].pose.position.y + 0.707 * 0.15 * (i - 9);
     }
-    for(int i = 20 ; i <30 ; i++)
+    for(int i = 20;i < 30;i++)
     {
-        path.poses[i].pose.position.x = car_x + 0.707 * 0.15 * (i-19) ;
-        path.poses[i].pose.position.y = car_y - 0.707 * 0.15 * (i-19) ;         
+        path.poses[i].pose.position.x = path.poses[19].pose.position.x + 0.707 * 0.15 * (i - 19);
+        path.poses[i].pose.position.y = path.poses[19].pose.position.y - 0.707 * 0.15 * (i - 19);
     }
-    for(int i = 30; i <40 ; i++) 
+    for(int i = 30;i < 40;i++)
     {
-        path.poses[i].pose.position.x = car_x + 0.707 * 0.15 * (i-29) ;
-        path.poses[i].pose.position.y = car_y - 0.707 * 0.15 * (i-29) ;          
+        path.poses[i].pose.position.x = path.poses[29].pose.position.x + 0.707 * 0.15 * (i - 29);
+        path.poses[i].pose.position.y = path.poses[29].pose.position.y + 0.707 * 0.15 * (i - 29);
     }
     pub_path_.publish(path);
+    cout << "product a path." << endl;
+    
 }
+
+
 
 int main(int argc,char** argv)
 {
     ros::init(argc, argv, "product_path");
     ros::NodeHandle nh;
-    pub_path_ = nh.advertise<nav_msgs::Path>("/own_path", 3);
+    pub_path_ = nh.advertise<nav_msgs::Path>("/own_path", 1);
+    pub_obstacle = nh.advertise<nav_msgs::Path>("/obstacle", 1);
     car_in_map_ = new Tf_Listerner("map","base_footprint");
     char path_shape;
     while(ros::ok())
     {
+        //Obstacle_production();
         cout << "please input 'l' 's' to product a path." << endl;
         cin >> path_shape;
-        if(path_shape == 'l') pubLine();
+        if(path_shape == 'l')   
+        {
+            pubLine();
+            //Obstacle_production();
+        }
         else if(path_shape == 's') pubPath();
         else if(path_shape == '7') pubLine7();
         else if(path_shape == 'z') pubLineZ();

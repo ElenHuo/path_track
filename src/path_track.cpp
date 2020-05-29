@@ -2,7 +2,7 @@
 
 Path_Track::Path_Track()
 :angle_bias_(0),distance_biasY_(0),complete_path_track_flag_(2),calculated_frequency_(20.0)
-,pid_p_(1),pid_i_(0),pid_d_(0),ave_vel_(0.3)
+,pid_p_(3),pid_i_(0),pid_d_(1),ave_vel_(1)
 {
     dynamic_reconfigure::Server<path_track::path_track_Config> server;
     dynamic_reconfigure::Server<path_track::path_track_Config>::CallbackType f;
@@ -270,7 +270,7 @@ void Path_Track::threadRunTwo()
             sendVelocityCommand();
             // if((current_position_->x() - (path_.end() - 1)->x) * (current_position_->x() - (path_.end() - 1)->x) 
             //  + (current_position_->y() - (path_.end() - 1)->y) * (current_position_->y() - (path_.end() - 1)->y) < 1)
-            if(path_.size() <= 2)
+            if(path_.size() <= 3)
             {
                 complete_path_track_flag_ = 2;
                 cout << "agv arrived the position,but angular is not!" << endl;

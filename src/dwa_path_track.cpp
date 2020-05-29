@@ -1,5 +1,7 @@
 #include "dwa_path_track.h"
 
+//本文件基于粒子滤波的局部路径规划，不包含手动添加障碍物，已经具备避障功能，可以现实中使用
+
 One_Particle::One_Particle()
 :predict_step_(10),evaluate_value_(0)
 {}
@@ -68,6 +70,7 @@ void One_Particle::generateTrajectory()
     double pre_car_y = car_in_map_g->y();
     double pre_car_theta = acos(2 * car_in_map_g->ow() * car_in_map_g->ow() - 1);
     pre_car_theta = car_in_map_g->oz() * car_in_map_g->ow() > 0 ? pre_car_theta:(0 - pre_car_theta);
+    pre_car_theta = car_in_map_g->oz() > 0 ? pre_car_theta : (0 - pre_car_theta);
     
     tf::Quaternion q1;
     tf::Matrix3x3 M1;
